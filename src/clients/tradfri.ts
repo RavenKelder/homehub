@@ -24,8 +24,6 @@ export async function initialise(): Promise<TradfriClient> {
 
   await tradfri.connect(identity, psk);
 
-  tradfriClient = tradfri;
-
   return tradfri;
 }
 
@@ -114,7 +112,7 @@ export async function toggleLight(
   for (let i = 0; i < statuses.length; i++) {
     const result = await client.operateLight(device, { onOff: !statuses[0] });
     if (!result) {
-      failures.push(device.lightList[i])
+      failures.push(device.lightList[i]);
     }
   }
 
@@ -138,4 +136,6 @@ class TradfriError extends Error {
   }
 }
 
-export let tradfriClient: TradfriClient;
+const tradfriClient: Promise<TradfriClient> = initialise();
+
+export { tradfriClient };

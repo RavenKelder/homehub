@@ -15,16 +15,14 @@ enum LIGHT {
 
 const lightsRouter = express.Router();
 
-const initialising = initialise();
-
 lightsRouter.use(async (_req, _res, next) => {
-  await initialising;
+  await tradfriClient;
   next();
 });
 
 lightsRouter.get("/", async (_req, res) => {
   try {
-    const lights = await getLights(tradfriClient);
+    const lights = await getLights(await tradfriClient);
     res.send(lights);
   } catch (err) {
     res.status(500).send(err);
@@ -35,7 +33,7 @@ lightsRouter.use("/:id", async (req, res, next) => {
   const id = parseInt(req.params["id"]);
   let light: Accessory;
   try {
-    const lights = await getLights(tradfriClient);
+    const lights = await getLights(await tradfriClient);
 
     const findLight = lights.filter((l) => l.instanceId === id);
 
@@ -54,7 +52,7 @@ lightsRouter.use("/:id", async (req, res, next) => {
   if (req.path === "/") {
     res.send(req.app.locals[LIGHT.OBJECT]);
     return;
-  };
+  }
 
   next();
 });
@@ -63,7 +61,7 @@ lightsRouter.get("/:id/toggle", async (req, res) => {
   const light = req.app.locals[LIGHT.OBJECT] as Accessory;
 
   try {
-    await toggleLight(tradfriClient, light.instanceId.toString(10));
+    await toggleLight(await tradfriClient, light.instanceId.toString(10));
 
     res.sendStatus(200);
   } catch (err) {
@@ -84,7 +82,7 @@ lightsRouter.get("/:id/brightness/:value", async (req, res) => {
 
   try {
     await setLightBrightness(
-      tradfriClient,
+      await tradfriClient,
       light.instanceId.toString(10),
       brightness,
     );
@@ -110,7 +108,7 @@ lightsRouter.get("/:id/temperature/:value", async (req, res) => {
 
   try {
     await setLightTemperature(
-      tradfriClient,
+      await tradfriClient,
       light.instanceId.toString(10),
       brightness,
     );

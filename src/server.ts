@@ -1,6 +1,7 @@
-import 'module-alias/register';
+import "module-alias/register";
 import express from "express";
 import router from "./routes";
+import "./utils/cron";
 
 const port = process.env.PORT || "8080";
 
